@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FriendRequest extends Model
+class Category extends Model
 {
     use HasFactory;
-
-    protected $table = 'FriendRequests';
-
+    protected $table = 'categories';
+    protected $fillable = [
+    'name'
+    ];
 }

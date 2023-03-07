@@ -1,13 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\laravelcrud;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MessagesController;
-use App\Http\Controllers\FriendsController;
-use App\Events\formSubmitted;
+use App\Http\Controllers\ArticlesController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,28 +23,76 @@ use App\Models\User;
 |
 */
 
-Route::get('/secondpage', function () {
-    return view('secondpage');
+Route::get('admin/login', [AuthController::class, 'adminLoginView']);
+Route::get('admin/logout', [AuthController::class, 'adminLogout']);
+Route::post('adminlogin', [AuthController::class, 'adminLogin']);
+
+
+Route::group([ 'prefix' => 'admin','middleware' => 'is_admin'], function ()
+{
+    Route::group([ 'prefix' => 'home'], function ()
+    {
+    Auth::routes();
+    Route::get('', [HomeController::class, 'index']);
+    });
+
+    Route::group([ 'prefix' => 'articles'], function ()
+    {
+        Route::get('', [ArticlesController::class, 'index']);
+        Route::get('category/{
+            
+        }', [ArticlesController::class, 'viewCategory']);
+        Route::get('{id}/update', [ArticlesController::class, 'updateView']);
+        Route::get('{id}/delete', [ArticlesController::class, 'delete']);
+
+        Route::get('create', [ArticlesController::class, 'createView']);
+
+        Route::post('update', [ArticlesController::class, 'update']);
+        Route::post('create', [ArticlesController::class, 'create']);
+    });
+
+    Route::group([ 'prefix' => 'projects'], function ()
+    {
+
+    Route::get('', [ProjectsController::class, 'index']);
+    Route::get('create', [ProjectsController::class, 'createView']);
+    Route::get('{id}/edit', [ProjectsController::class, 'editView']);
+    Route::get('{id}/delete', [ProjectsController::class, 'delete']);
+
+    Route::post('update', [ProjectsController::class, 'update']);
+    Route::post('create', [ProjectsController::class, 'create']);
+
+    });
+
+    Route::group([ 'prefix' => 'categories'], function ()
+    {
+    Route::get('', [CategoriesController::class, 'index']);
+    Route::get('{id}/edit', [CategoriesController::class, 'updateView']);
+    Route::get('{id}/delete', [CategoriesController::class, 'delete']);
+
+    Route::get('/create', [CategoriesController ::class, 'createView']);
+
+    Route::post('/create', [CategoriesController ::class, 'create']);
+    Route::post('/update', [CategoriesController ::class, 'update']);
+
+    });
+    
+    Route::group([ 'prefix' => 'users'], function ()
+    {
+    Route::get('', [UsersController::class, 'adminView']);
+    Route::get('{id}/update', [UsersController::class, 'updateView']);
+    Route::get('{id}/delete', [UsersController::class, 'delete']);
+
+    Route::get('/create', [UsersController ::class, 'createView']);
+
+    Route::post('/create', [UsersController ::class, 'create']);
+    Route::post('/update', [UsersController ::class, 'update']);
+
+
+    });
 });
 
-Route::get('/newrecord', function () {
-    return view('newrecord');
-});
-
-Route::get('/dm', function () {
-    return view('dm');
-});
+Route::get('/login', [AuthController ::class, 'loginView']);
 
 
-// GET
 
-Route::get('/', [AuthController::class, 'navigateToDashboard']);
-Route::get('dashboard', [AuthController::class, 'navigateToDashboard']);
-Route::get('login', [AuthController::class, 'loginView']);
-Route::get('register', [AuthController::class, 'registerView']);
-Route::get('/logout', [AuthController::class,"logout"]);
-
-// POST
-
-Route::post('/finishlogin', [AuthController::class,"finishLogin"]);
-Route::post('/finishregister', [AuthController::class,"finishRegister"]);
